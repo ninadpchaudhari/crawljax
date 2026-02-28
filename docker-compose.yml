@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  # Selenium standalone Chrome – provides the browser for Crawljax
+  selenium:
+    image: selenium/standalone-chrome:4.9.0
+    shm_size: "2gb"
+    ports:
+      - "4444:4444"
+      # VNC viewer available at http://localhost:7900 (password: secret)
+      - "7900:7900"
+    healthcheck:
+      test: ["CMD", "curl", "-sSf", "http://localhost:4444/wd/hub/status"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+
+  # Crawljax CLI – connects to the Selenium container as a remote browser
+  crawljax:
+    build: .
+    depends_on:
+      selenium:
+        condition: service_healthy
+    volumes:
+      - ./output:/home/crawljax/output
+    # Default: crawl http://example.com for up to 2 minutes and write output to ./output
+    # Override by running: docker-compose run crawljax <url> /home/crawljax/output [OPTIONS]
+    command:
+      - "http://example.com"
+      - "/home/crawljax/output"
+      - "-b"
+      - "REMOTE"
+      - "-browserRemoteUrl"
+      - "http://selenium:4444/wd/hub"
+      - "-t"
+      - "2"
+      - "-o"
