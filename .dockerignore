@@ -1,0 +1,27 @@
+# Exclude files that don't need to be sent to the Docker build context
+
+# Maven build output (the build stage runs Maven itself)
+target/
+*/target/
+**/target/
+
+# IDE files
+.idea/
+.settings/
+*.iml
+*.iws
+*.ipr
+.classpath
+.project
+
+# Git
+.git/
+
+# macOS
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Docker output directory
+output/
